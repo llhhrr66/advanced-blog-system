@@ -1,0 +1,186 @@
+version: '3.8'
+
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: blog-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: blog_system
+      MYSQL_USER: blog
+      MYSQL_PASSWORD: blog123456
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    command: 
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    networks:
+      - blog-network
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: blog-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ""
+    networks:
+      - blog-network
+
+  # Elasticsearch搜索引擎
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: blog-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - blog-network
+
+  # RabbitMQ消息队列
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: blog-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123456
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - blog-network
+
+  # Spring Boot后端应用
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: blog-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/blog_system?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+      - SPRING_DATASOURCE_USERNAME=blog
+      - SPRING_DATASOURCE_PASSWORD=blog123456
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=admin123456
+      - SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200
+    depends_on:
+      - mysql
+      - redis
+      - elasticsearch
+      - rabbitmq
+    networks:
+      - blog-network
+    volumes:
+      - ./backend/logs:/app/logs
+      - ./backend/uploads:/app/uploads
+
+  # Next.js前端应用
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: blog-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080/api
+    depends_on:
+      - backend
+    networks:
+      - blog-network
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: blog-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+      - ./docker/nginx/logs:/var/log/nginx
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - blog-network
+
+  # Prometheus监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: blog-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - blog-network
+
+  # Grafana可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: blog-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123456
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - blog-network
+
+# 网络配置
+networks:
+  blog-network:
+    driver: bridge
+
+# 数据卷配置
+volumes:
+  mysql_data:
+  redis_data:
+  es_data:
+  rabbitmq_data:
+  prometheus_data:
+  grafana_data:

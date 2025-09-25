@@ -1,0 +1,93 @@
+# Java
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Spring Boot
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.next/
+out/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite
+*.sql.backup
+
+# Logs
+logs/
+*.log
+log-*.txt
+
+# Uploads
+uploads/
+temp/
+
+# Backup files
+*.backup
+*.bak
+
+# Security
+application-prod.yml
+application-production.yml
+*.key
+*.pem
+*.p12
+*.jks
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+*.cache
+
+# Generated files
+dist/
+.generated/
+
+# Docker
+.dockerignore
+
+# Monitoring
+grafana_data/
+prometheus_data/

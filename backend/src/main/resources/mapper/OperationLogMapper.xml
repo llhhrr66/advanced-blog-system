@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.mapper.OperationLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.blog.domain.po.OperationLog">
+        <id column="id" property="id" />
+        <result column="operation_type" property="operationType" />
+        <result column="operation_desc" property="operationDesc" />
+        <result column="user_id" property="userId" />
+        <result column="username" property="username" />
+        <result column="user_role" property="userRole" />
+        <result column="target_type" property="targetType" />
+        <result column="target_ids" property="targetIds" />
+        <result column="old_values" property="oldValues" />
+        <result column="new_values" property="newValues" />
+        <result column="method" property="method" />
+        <result column="url" property="url" />
+        <result column="ip_address" property="ipAddress" />
+        <result column="user_agent" property="userAgent" />
+        <result column="status" property="status" />
+        <result column="error_message" property="errorMessage" />
+        <result column="execution_time" property="executionTime" />
+        <result column="reason" property="reason" />
+        <result column="extra_data" property="extraData" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, operation_type, operation_desc, user_id, username, user_role, target_type, 
+        target_ids, old_values, new_values, method, url, ip_address, user_agent, 
+        status, error_message, execution_time, reason, extra_data, create_time
+    </sql>
+
+    <!-- 分页查询操作日志 -->
+    <select id="selectOperationLogPage" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM operation_logs
+        <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="operationType != null and operationType != ''">
+                AND operation_type = #{operationType}
+            </if>
+            <if test="targetType != null and targetType != ''">
+                AND target_type = #{targetType}
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 统计用户操作次数 -->
+    <select id="countByUserAndOperation" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM operation_logs
+        <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="operationType != null and operationType != ''">
+                AND operation_type = #{operationType}
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!-- 清理过期日志 -->
+    <delete id="deleteExpiredLogs">
+        DELETE FROM operation_logs 
+        WHERE create_time &lt; #{beforeTime}
+    </delete>
+
+    <!-- 获取操作统计信息 -->
+    <select id="getOperationStatistics" resultMap="BaseResultMap">
+        SELECT 
+            operation_type,
+            operation_desc,
+            target_type,
+            COUNT(*) as id,
+            COUNT(CASE WHEN status = 1 THEN 1 END) as status,
+            COUNT(CASE WHEN status = 0 THEN 1 END) as execution_time,
+            AVG(execution_time) as reason
+        FROM operation_logs
+        <where>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        GROUP BY operation_type, operation_desc, target_type
+        ORDER BY COUNT(*) DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,149 @@
+{
+  "mcp_configuration": {
+    "analysis_timestamp": "2025-09-24T04:11:24Z",
+    "detected_mcp_servers": {
+      "claude_desktop": {
+        "config_file": "C:\\Users\\liangjunrong\\.claude.json",
+        "project_specific_servers": {},
+        "enabled_servers": [],
+        "disabled_servers": [],
+        "status": "no_mcp_servers_configured"
+      },
+      "cursor_ide": {
+        "config_file": "C:\\Users\\liangjunrong\\.cursor\\mcp.json",
+        "configured_servers": {},
+        "status": "no_mcp_servers_configured"
+      },
+      "lingma_ide": {
+        "config_file": "C:\\Users\\liangjunrong\\.lingma\\lingma_mcp.json",
+        "configured_servers": {},
+        "status": "no_mcp_servers_configured"
+      },
+      "mcp_feedback_enhanced": {
+        "config_directory": "C:\\Users\\liangjunrong\\.config\\mcp-feedback-enhanced",
+        "ui_settings": {
+          "layoutMode": "combined-vertical",
+          "language": "zh-CN",
+          "autoClose": false,
+          "sessionHistoryRetentionHours": 72,
+          "userMessageRecordingEnabled": true,
+          "audioNotificationEnabled": false
+        },
+        "status": "configured_with_ui_only"
+      }
+    },
+    "available_mcp_resources": [
+      {
+        "name": "Browser console logs",
+        "uri": "console://logs",
+        "mime_type": "text/plain"
+      }
+    ],
+    "available_mcp_tools": {
+      "github": [
+        "add_issue_comment",
+        "create_branch",
+        "create_issue",
+        "create_or_update_file",
+        "create_pull_request",
+        "create_pull_request_review",
+        "create_repository",
+        "fork_repository",
+        "get_file_contents",
+        "get_issue",
+        "get_pull_request",
+        "get_pull_request_comments",
+        "get_pull_request_files",
+        "get_pull_request_reviews",
+        "get_pull_request_status",
+        "list_commits",
+        "list_issues",
+        "list_pull_requests",
+        "merge_pull_request",
+        "push_files",
+        "search_code",
+        "search_issues",
+        "search_repositories",
+        "search_users",
+        "update_issue",
+        "update_pull_request_branch"
+      ],
+      "filesystem": [
+        "create_directory",
+        "edit_file",
+        "get_file_info",
+        "list_allowed_directories",
+        "list_directory",
+        "list_directory_with_sizes",
+        "move_file",
+        "read_file",
+        "read_media_file",
+        "read_multiple_files",
+        "read_text_file",
+        "search_files",
+        "write_file"
+      ],
+      "knowledge_graph": [
+        "add_observations",
+        "create_entities",
+        "create_relations",
+        "delete_entities",
+        "delete_observations",
+        "delete_relations",
+        "open_nodes",
+        "read_graph",
+        "search_nodes"
+      ],
+      "visualization": [
+        "generate_area_chart",
+        "generate_bar_chart",
+        "generate_boxplot_chart",
+        "generate_column_chart",
+        "generate_district_map",
+        "generate_dual_axes_chart",
+        "generate_fishbone_diagram",
+        "generate_flow_diagram",
+        "generate_funnel_chart",
+        "generate_histogram_chart",
+        "generate_line_chart",
+        "generate_liquid_chart",
+        "generate_mind_map",
+        "generate_network_graph",
+        "generate_organization_chart",
+        "generate_path_map",
+        "generate_pie_chart",
+        "generate_pin_map",
+        "generate_radar_chart",
+        "generate_sankey_chart",
+        "generate_scatter_chart",
+        "generate_treemap_chart",
+        "generate_venn_chart",
+        "generate_violin_chart",
+        "generate_word_cloud_chart"
+      ],
+      "browser_automation": [
+        "puppeteer_click",
+        "puppeteer_evaluate",
+        "puppeteer_fill",
+        "puppeteer_hover",
+        "puppeteer_navigate",
+        "puppeteer_screenshot",
+        "puppeteer_select"
+      ]
+    },
+    "summary": {
+      "total_configured_servers": 0,
+      "total_available_tools": 73,
+      "total_available_resources": 1,
+      "primary_capabilities": [
+        "GitHub integration",
+        "File system operations",
+        "Knowledge graph management",
+        "Data visualization and charts",
+        "Browser automation via Puppeteer",
+        "Console log access"
+      ],
+      "configuration_status": "minimal_local_config_detected"
+    }
+  }
+}
